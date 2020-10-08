@@ -4,12 +4,11 @@ const contractSchema = mongoose.Schema({
     contractId: mongoose.Schema.Types.ObjectId,
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
     startDate: Date,
-    endDate: Date,
+    noOfYears: Number,
     interestRate: Number,
     loanAmount: Number,
     remainingAmount: Number,
     amountDue: Number,
-    frequency: Number,
     dueDate: Date,
     status: String
 });

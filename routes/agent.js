@@ -3,12 +3,14 @@ const router = express.Router();
 const Contract = require("../models/contracts");
 var addMonths = require("date-fns/addMonths");
 const { basicAuth, agentAuth } = require("../auth");
+const mongoose = require('mongoose');
 
 router.post("/create", basicAuth, agentAuth, (req, res, next) => {
   const interestRate = req.body.interestRate;
-  const startDate = new Date().now().toUTCString();
+  const startDate = new Date();
   const noOfYears = req.body.noOfYears;
   const loanAmount = req.body.loanAmount;
+  const dueDate = new Date(new Date(startDate).setMonth(startDate.getMonth() + 1));
 
   const interest = (loanAmount * interestRate * noOfYears) / 100 / 12;
   const amountDue = Math.round(
@@ -18,7 +20,7 @@ router.post("/create", basicAuth, agentAuth, (req, res, next) => {
     interest);
 
   const contract = new Contract({
-    contractId: mongoose.Schema.Types.ObjectId,
+    contractId: mongoose.Types.ObjectId(),
     user: req.body.userId,
     startDate: startDate,
     noOfYears: noOfYears,
@@ -26,7 +28,7 @@ router.post("/create", basicAuth, agentAuth, (req, res, next) => {
     loanAmount: loanAmount,
     remainingAmount: loanAmount,
     amountDue: amountDue,
-    dueDate: addMonths(startDate, 1),
+    dueDate: dueDate,
     status: "NEW",
   });
 

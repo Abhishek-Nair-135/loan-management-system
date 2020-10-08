@@ -4,7 +4,7 @@ const Contract = require("../models/contracts");
 const { basicAuth, customerAuth } = require("../auth");
 
 router.get("/list", basicAuth, customerAuth, (req, res, next) => {
-  Contract.find( req.body.conditions )
+  Contract.find()
     .exec()
     .then((contracts) => {
      return res.status(200).json({
