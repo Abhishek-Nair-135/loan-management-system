@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
 
 const contractSchema = mongoose.Schema({
-    contractId: mongoose.Schema.Types.ObjectId,
+    contractId: { type: mongoose.Schema.Types.ObjectId, unique: true },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
-    startDate: Date,
+    startDate: String,
     noOfYears: Number,
     interestRate: Number,
     loanAmount: Number,
     remainingAmount: Number,
     amountDue: Number,
-    dueDate: Date,
+    dueDate: String,
     status: String
 });
 

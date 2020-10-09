@@ -4,7 +4,14 @@ const Contract = require("../models/contracts");
 const { basicAuth, customerAuth } = require("../auth");
 
 router.get("/list", basicAuth, customerAuth, (req, res, next) => {
-  Contract.find()
+  const filter = {};
+  if(req.query.startDate !== undefined && new Date(req.query.startDate) != "Invalid Date")
+    filter["startDate"] = new Date(req.query.startDate).toDateString();
+  
+  if(req.query.status !== undefined && /["NEW", "APPROVED", "REJECTED"]/.test(req.query.status))
+    filter["status"] = req.query.status;
+
+  Contract.find({userId: req.userData.userId, ...filter})
     .exec()
     .then((contracts) => {
      return res.status(200).json({
@@ -19,7 +26,14 @@ router.get("/list", basicAuth, customerAuth, (req, res, next) => {
 });
 
 router.get("/view/:contractId", basicAuth, customerAuth, (req, res, next) => {
-  Contract.findOne({ contractId: req.params.contractId, ...req.body.conditions })
+  const filter = {};
+  if(req.query.startDate !== undefined && new Date(req.query.startDate) != "Invalid Date")
+    filter["startDate"] = new Date(req.query.startDate).toDateString();
+  
+  if(req.query.status !== undefined && /["NEW", "APPROVED", "REJECTED"]/.test(req.query.status))
+    filter["status"] = req.query.status;
+
+  Contract.findOne({ userId: req.userData.userId, contractId: req.params.contractId, ...filter })
     .exec()
     .then((contract) => {
       res.status(200).json({

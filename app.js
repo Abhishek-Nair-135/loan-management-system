@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
+const filter = require('content-filter');
 
 const custRoutes = require("./routes/customer");
 const agentRoutes = require("./routes/agent");
@@ -18,6 +19,13 @@ mongoose.connect(
 );
 mongoose.Promise = global.Promise;
 
+var blackList = ['$','{','&&','||']
+var options = {
+    urlBlackList: blackList,
+    bodyBlackList: blackList
+}
+
+app.use(filter(options));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
