@@ -117,7 +117,7 @@ router.patch("/approve/:contractId", basicAuth, adminAuth, (req, res, next) => {
   )
     .then((result) => {
       res.json({
-        msg: "Loan updated",
+        message: "Loan Approved!!",
         noOfUpdates: result.nModified,
       });
     })

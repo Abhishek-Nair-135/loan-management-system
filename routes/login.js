@@ -18,8 +18,7 @@ router.post("/", (req, res, next) => {
         bcrypt.compare(req.body.password, user[0].password, (err, result) => {
           if (err) {
             return res.status(401).json({
-              message: "Auth failed",
-              msg: "two"
+              message: "Auth failed"
             });
           }
           if (result) {
@@ -41,7 +40,6 @@ router.post("/", (req, res, next) => {
           }
           res.status(401).json({
             message: "Auth failed",
-            msg: "three"
           });
         });
       })

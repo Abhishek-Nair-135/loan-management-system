@@ -2,21 +2,24 @@ const express = require("express");
 const router = express.Router();
 const Contract = require("../models/contracts");
 const { basicAuth, agentAuth } = require("../auth");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 router.post("/create", basicAuth, agentAuth, (req, res, next) => {
   const interestRate = req.body.interestRate;
   const startDate = new Date().toDateString();
   const noOfYears = req.body.noOfYears;
   const loanAmount = req.body.loanAmount;
-  const dueDate = new Date(new Date(startDate).setMonth(new Date(startDate).getMonth() + 1)).toDateString();
+  const dueDate = new Date(
+    new Date(startDate).setMonth(new Date(startDate).getMonth() + 1)
+  ).toDateString();
 
   const interest = (loanAmount * interestRate * noOfYears) / 100 / 12;
   const amountDue = Math.round(
     (Math.pow((interestRate * noOfYears) / 100 / 12 + 1, noOfYears * 12) /
       (Math.pow((interestRate * noOfYears) / 100 / 12 + 1, noOfYears * 12) -
         1)) *
-    interest);
+      interest
+  );
 
   const contract = new Contract({
     contractId: mongoose.Types.ObjectId(),
@@ -47,15 +50,21 @@ router.post("/create", basicAuth, agentAuth, (req, res, next) => {
     });
 });
 
-router.get("/list",  basicAuth, agentAuth, (req, res, next) => {
+router.get("/list", basicAuth, agentAuth, (req, res, next) => {
   const filter = {};
-  if(req.query.startDate !== undefined && new Date(req.query.startDate) != "Invalid Date")
+  if (
+    req.query.startDate !== undefined &&
+    new Date(req.query.startDate) != "Invalid Date"
+  )
     filter["startDate"] = new Date(req.query.startDate).toDateString();
-  
-  if(req.query.status !== undefined && /["NEW", "APPROVED", "REJECTED"]/.test(req.query.status))
+
+  if (
+    req.query.status !== undefined &&
+    /["NEW", "APPROVED", "REJECTED"]/.test(req.query.status)
+  )
     filter["status"] = req.query.status;
-  
-    console.log(filter);
+
+  console.log(filter);
 
   Contract.find(filter)
     .exec()
@@ -73,10 +82,16 @@ router.get("/list",  basicAuth, agentAuth, (req, res, next) => {
 
 router.get("/view/:contractId", (req, res, next) => {
   const filter = {};
-  if(req.query.startDate !== undefined && new Date(req.query.startDate) != "Invalid Date")
+  if (
+    req.query.startDate !== undefined &&
+    new Date(req.query.startDate) != "Invalid Date"
+  )
     filter["startDate"] = new Date(req.query.startDate).toDateString();
-  
-  if(req.query.status !== undefined && /["NEW", "APPROVED", "REJECTED"]/.test(req.query.status))
+
+  if (
+    req.query.status !== undefined &&
+    /["NEW", "APPROVED", "REJECTED"]/.test(req.query.status)
+  )
     filter["status"] = req.query.status;
 
   Contract.findOne({ contractId: req.params.contractId, ...filter })
@@ -93,11 +108,11 @@ router.get("/view/:contractId", (req, res, next) => {
     });
 });
 
-router.patch("/edit",  basicAuth, agentAuth, (req, res, next) => {
+router.patch("/edit", basicAuth, agentAuth, (req, res, next) => {
   const interestRate = new Number(req.query.interestRate);
   const noOfYears = new Number(req.query.noOfYears);
   const contractId = new mongoose.Types.ObjectId(req.query.contractId);
- 
+
   Contract.findOne({
     contractId: contractId,
   })
@@ -112,30 +127,33 @@ router.patch("/edit",  basicAuth, agentAuth, (req, res, next) => {
         (Math.pow((interestRate * noOfYears) / 100 / 12 + 1, noOfYears * 12) /
           (Math.pow((interestRate * noOfYears) / 100 / 12 + 1, noOfYears * 12) -
             1)) *
-        interest);
+          interest
+      );
 
-        Contract.updateOne(
-          { contractId: contract.contractId },
-          {
-            startDate: startDate,
-            noOfYears: noOfYears,
-            interestRate: interestRate,
-            remainingAmount: remainingAmount,
-            amountDue: amountDue,
-            dueDate: contract.dueDate,
-            status: status,
-          }
-        )
-          .then((result) => {
-            res.json({
-              msg: "Loan updated",
-              noOfUpdates: result.nModified,
-            });
-          })
-          .catch((err) => {
-            res.send(err);
+      Contract.updateOne(
+        { contractId: contract.contractId },
+        {
+          startDate: startDate,
+          noOfYears: noOfYears,
+          interestRate: interestRate,
+          remainingAmount: remainingAmount,
+          amountDue: amountDue,
+          dueDate: contract.dueDate,
+          status: status,
+        }
+      )
+        .then((result) => {
+          res.json({
+            message: "Loan updated",
+            noOfUpdates: result.nModified,
           });
-      });
+        })
+        .catch((err) => {
+          res.json({
+            error: err,
+          });
+        });
+    });
 });
 
 module.exports = router;
