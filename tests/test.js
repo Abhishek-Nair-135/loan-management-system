@@ -131,6 +131,11 @@ describe("Test the /agent routes", () => {
 });
 
 
+/*
+ * Test the /admin routes
+ */
+
+
 describe("Test all /admin routes", () => {
   var token;
   before((done) => {
@@ -240,6 +245,68 @@ describe("Test all /admin routes", () => {
       });
   });
   
+})
+
+/*
+ * Test the /customer routes
+ */
+
+describe("Test all /customer routes", () => {
+  var token;
+  before((done) => {
+    chai
+      .request(server)
+      .post("/login")
+      .send({
+        userName: "abhisheknair135@gmail.com",
+        password: "secure",
+        role: "CUSTOMER",
+      })
+      .end(function (err, res) {
+        if (err) throw err;
+        token = res.body.token;
+        done();
+      });
+  });
+
+  it("Should GET all the loan contracts of the customer", (done) => {
+    chai
+      .request(server)
+      .get("/customer/list")
+      .set("Authorization", "bearer " + token)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        res.body.should.have.property("contracts");
+        res.body.contracts.length.should.be.gte(0);
+        done();
+      });
+  });
+  it("Unauthorized GET request to list loan contracts of the customer", (done) => {
+    chai
+      .request(server)
+      .get("/customer/list")
+      .end((err, res) => {
+        res.should.have.status(401);
+        res.body.should.be.a("object");
+        res.body.should.have.property("message");
+        done();
+      });
+  });
+  it("Should GET all the loan contracts of the user satisfying the condition(s)", (done) => {
+    chai
+      .request(server)
+      .get("/customer/list?status=APPROVED&startDate=2020-10-08")
+      .set("Authorization", "bearer " + token)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        res.body.should.have.property("contracts");
+        res.body.contracts.length.should.be.gte(0);
+        done();
+      });
+  });
+
   it("close connection", () => {
     mongoose.connection.close();
   });
