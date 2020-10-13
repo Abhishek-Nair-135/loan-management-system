@@ -37,13 +37,11 @@ router.post("/create", basicAuth, agentAuth, (req, res, next) => {
   contract
     .save()
     .then((result) => {
-      console.log(result);
       res.status(201).json({
         message: "Loan applied successfully",
       });
     })
     .catch((err) => {
-      console.log(err);
       res.status(500).json({
         error: err,
       });
@@ -63,8 +61,6 @@ router.get("/list", basicAuth, agentAuth, (req, res, next) => {
     /["NEW", "APPROVED", "REJECTED"]/.test(req.query.status)
   )
     filter["status"] = req.query.status;
-
-  console.log(filter);
 
   Contract.find(filter)
     .exec()

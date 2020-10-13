@@ -100,7 +100,7 @@ router.patch("/edit", basicAuth, adminAuth, (req, res, next) => {
         )
           .then((result) => {
             res.json({
-              msg: "Loan updated",
+              message: "Loan updated",
               noOfUpdates: result.nModified,
             });
           })
