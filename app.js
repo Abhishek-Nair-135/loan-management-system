@@ -11,7 +11,7 @@ const signupRoute = require("./routes/signup");
 const loginRoute = require("./routes/login");
 
 mongoose.connect(
-  "mongodb+srv://abhisheknair135:abhisheknair.ucmas@cluster0.rfvix.mongodb.net/<dbname>?retryWrites=true&w=majority",
+  "mongodb+srv://<YOUR_ID>:<YOUR_PASSWORD>@cluster0.rfvix.mongodb.net/<dbname>?retryWrites=true&w=majority",
   {
     useUnifiedTopology: true,
     useNewUrlParser: true,
